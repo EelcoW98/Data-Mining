@@ -51,13 +51,15 @@ def LSH_Imp (sparse_matrix):
         print(f"Perm_matrix shape: {Perm_matrix.shape}")
 
 
+
+
         # Initialize the signature matrix with zeros values
         signature_matrix = np.zeros((PS, usr_size))
 
         # Compute MinHash signatures
         for perm_idx in range(PS):  # Iterate over permutations
             # Current permutation of movie indices
-            perm_vector = Perm_matrix[:, 0]  # 1-based indices
+            perm_vector = Perm_matrix[:, perm_idx]  # 1-based indices
 
             # Convert to 0-based indices
             perm_vector = perm_vector - 1
@@ -100,6 +102,9 @@ def main():
     minhash_signatures = LSH_Imp(sparse_matrix)
 
     print(f"MinHash signature matrix shape: {minhash_signatures.shape}")
+
+    print(minhash_signatures[:, 0])
+
 
 if __name__ == "__main__":
     main()
