@@ -55,30 +55,27 @@ def LSH_Imp (sparse_matrix):
         signature_matrix = np.zeros((PS, usr_size))
 
         # Compute MinHash signatures
-        for perm_idx in range(PS):  # Iterate over range(PS Values)
-            
-            for user_idx in range(usr_size):
-                # Extract the permutation vector for the current permutation index
-                perm_vector = Perm_matrix[:, perm_idx]
+        for perm_idx in range(PS):  # Iterate over permutations
+            # Current permutation of movie indices
+            perm_vector = Perm_matrix[:, 0]  # 1-based indices
 
-                # Extract the sparse vector for the current user (convert to dense for element-wise multiplication)
-                user_vector = sparse_matrix[:, user_idx].toarray().flatten()
+            # Convert to 0-based indices
+            perm_vector = perm_vector - 1
 
-                # Perform element-wise multiplication
-                Pem_Spars = perm_vector * user_vector
+            # Reorder the sparse matrix rows based on the permutation
+            permuted_matrix = sparse_matrix[perm_vector, :]
 
-                # Replace zeros with a high number (at least as high as the number of movies)
-                Pem_Spars[Pem_Spars == 0] = mov_size + 1
+            # Get the index of the first non zero 
+            first_nonzero_indices = np.argmax(permuted_matrix != 0, axis=0)+1
 
-                # Get the minimum value for the current user
-                min_value = np.min(Pem_Spars)
-                signature_matrix[perm_idx, user_idx] = min_value
+            signature_matrix[perm_idx,] = first_nonzero_indices
+        
 
-            print(f"Current cycle for permutation: {perm_idx + 1} of {PS}")
+            print(f"Processed permutation {perm_idx + 1}/{PS}")
 
         print("MinHash signatures computed.")
         return signature_matrix
-
+    
     except Exception as e:
         print(f"Error loading the data or creating sparse matrix: {e}")
         return None
