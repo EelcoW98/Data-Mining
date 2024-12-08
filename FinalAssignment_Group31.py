@@ -150,7 +150,10 @@ def calculate_jaccard_similarity(sparse_matrix, candidate_pairs, threshold=0.5):
 
             # If similarity exceeds the threshold, add the pair to the result
             if jaccard_similarity > threshold:
-                similar_pairs.append((u1 + 1, u2 + 1))  # Convert to 1-based indexing as required
+                similar_pairs.append((u1 + 1, u2 + 1, jaccard_similarity))   # Convert to 1-based indexing as required
+            
+            # Sort the pairs by similarity score in descending order
+            similar_pairs.sort(key=lambda x: x[2], reverse=True)
 
         # Print the total number of similar pairs found
         print(f"Number of similar pairs: {len(similar_pairs)}")
@@ -164,8 +167,9 @@ def calculate_jaccard_similarity(sparse_matrix, candidate_pairs, threshold=0.5):
 def write_results(output_file, similar_pairs):
     try:
         with open(output_file, 'w') as f:
-            for u1, u2 in similar_pairs:
-                f.write(f"{u1},{u2}\n")
+            f.write(f"U1,U2,Jaccard Similarity\n")
+            for u1, u2, score in similar_pairs:
+                f.write(f"{u1},{u2},{score:.4f}\n")  # Write user1, user2, and similarity score
         print(f"Results written to {output_file}")
     except Exception as e:
         print(f"Error writing results to file: {e}")
